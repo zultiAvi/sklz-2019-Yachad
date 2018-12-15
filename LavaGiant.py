@@ -2,7 +2,8 @@ from Creature import *
 
 class LavaGiant(Creature):
     def __init__(self, game, id, health, loc, owner, unique_id, attack_multiplier, attack_range, max_speed, summoner, summoning_duration, suffocation_per_turn):
-        Creature(self, game, id, health, loc, owner, unique_id, attack_multiplier, attack_range, max_speed,summoner, summoning_duration, suffocation_per_turn)
+        Creature.__init__(self, game, id, health, loc, owner, unique_id, attack_multiplier, attack_range, max_speed,summoner, summoning_duration, suffocation_per_turn)
+        self.type = "LavaGiant"
 
     def do_your_thing(self):
         if not self.is_alive():

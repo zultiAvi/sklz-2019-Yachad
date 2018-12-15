@@ -1,8 +1,10 @@
 from GameObject import *
 
 class Elf (GameObject):
-    def __init__(self, game, id, init_health, initial_loc, owner, unique_id, attack_multiplier, attack_range, max_speed, turns_to_revive):
-        GameObject(game, id, init_health, initial_loc, owner, unique_id)
+    def __init__(self, id, init_health, initial_loc, owner, unique_id, attack_multiplier, attack_range, max_speed, turns_to_revive):
+        GameObject.__init__(self, id, init_health, initial_loc, owner, unique_id)
+        self.type = "Elf"
+
         self.attack_multiplier = attack_multiplier
         self.attack_range = attack_range
         self.currently_building = None

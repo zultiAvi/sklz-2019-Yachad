@@ -1,11 +1,11 @@
 from math import sqrt
-from MapObject import *
+from MapObject import MapObject
 
 class Location (MapObject):
     def __init__(self, row, col):
         self.row = row
         self.col = col
-        MapObject(None, "Location")
+        MapObject.__init__(self, self)
 
     def __add__(self, other):
         return Location(self.row + other.row, self.col + other.col)

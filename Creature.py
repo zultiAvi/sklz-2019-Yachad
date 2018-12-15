@@ -1,8 +1,9 @@
 from GameObject import *
 
 class Creature(GameObject):
-    def __init__(self, game, id, health, loc, owner, unique_id, attack_multiplier, attack_range, max_speed, summoner, summoning_duration, suffocation_per_turn):
-        GameObject(game, id, health, loc, owner, unique_id)
+    def __init__(self, id, health, loc, owner, unique_id, attack_multiplier, attack_range, max_speed, summoner, summoning_duration, suffocation_per_turn):
+        GameObject.__init__(self, id, health, loc, owner, unique_id)
+        self.type = "Creature"
         self.attack_multiplier = attack_multiplier
         self.attack_range = attack_range
         self.max_speed = max_speed

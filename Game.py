@@ -3,11 +3,8 @@ import Map
 import elf_kingdom
 
 class Game(BaseObject):
-    def __init__(self):
-        pass
-
-    def __init__(self, manager, owner, enemy, mapa):
-        self.manager = manager
+    def __init__(self, owner, enemy, mapa):
+        BaseObject.__init__(self, "Game")
         self.owner = owner
         self.enemy = enemy
         self.mapa = mapa

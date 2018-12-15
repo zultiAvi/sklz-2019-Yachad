@@ -1,8 +1,13 @@
 from Building import *
+from elf_kingdom import get_game
 
 class Portal(Building):
-    def __init__(self, game, id, health, loc, owner, unique_id, size, turns_to_summon):
-        Building(game, id, health, loc, owner, unique_id, size)
+    def __init__(self, id, health, loc, owner, unique_id, size, turns_to_summon):
+        Building.__init__(self, id, health, loc, owner, unique_id, size)
+        global game
+        self.game = get_game(owner)
+
+        self.type = "Portal"
         self.in_summoning = None
         self.is_summoning = False
         self.turns_to_summon = turns_to_summon

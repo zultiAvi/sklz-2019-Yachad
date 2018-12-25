@@ -13,8 +13,10 @@ class GameObject (MapObject):
         self.owner = owner
         self.unique_id = unique_id
 
+    def is_alive(self):
+        return self.current_health > 0
+
     def decrease_health(self, damage):
         self.current_health -= damage
         if self.current_health < 0:
             self.current_health = 0
-            self.alive = False

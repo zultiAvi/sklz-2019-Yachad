@@ -1,5 +1,17 @@
 import random
 
+games = [None, None]
+players = [None, None]
+
+def get_game(owner):
+    global games
+
+    if owner.id < 0 or owner.id > 1:
+        return games[0]
+
+    return games[owner.id]
+
+
 class BaseObject:
     def __init__(self, t):
         self.type = t

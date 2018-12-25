@@ -1,17 +1,19 @@
-import BaseObject
-import Map
-import elf_kingdom
+from elf_kingdom import *
+from LavaGiant import LavaGiant
+from IceTroll import IceTroll
+from Portal import Portal
 
 class Game(BaseObject):
     def __init__(self, owner, enemy, mapa):
-        BaseObject.__init__(self, "Game")
+        BaseObject("Game")
         self.owner = owner
         self.enemy = enemy
         self.mapa = mapa
+        self.last_uid = owner.id * 100000
 
         self.turn = 0
-        self.cols = mapa.size.cols
-        self.rows = mapa.size.rows
+        self.cols = mapa.map_size.col
+        self.rows = mapa.map_size.row
         self.max_points = mapa.castle_data.castle_max_health
         self.max_turns = mapa.max_turns
         self.castle_max_health = mapa.castle_data.castle_max_health
@@ -22,7 +24,7 @@ class Game(BaseObject):
         self.elf_max_health = mapa.elf_data.elf_max_health
         self.elf_spawn_turns = mapa.elf_data.elf_spawn_turns
         self.ice_troll_attack_multiplier = mapa.ice_troll_data.ice_troll_attack_multiplier
-        self.ice_troself.ll_attack_range = mapa.ice_troll_data.ice_troll_attack_range
+        self.ice_troll_attack_range = mapa.ice_troll_data.ice_troll_attack_range
         self.ice_troll_cost = mapa.ice_troll_data.ice_troll_cost
         self.ice_troll_max_health = mapa.ice_troll_data.ice_troll_max_health
         self.ice_troll_max_speed = mapa.ice_troll_data.ice_troll_max_speed
@@ -42,7 +44,7 @@ class Game(BaseObject):
 
 
     def debug(self, obj):
-        print obj
+        print "(%s) %s: %s" %(self.owner.id, self.turn, obj)
 
     def get_max_turn_time(self):
         return 0.1
@@ -127,9 +129,16 @@ class Game(BaseObject):
         return 0.1
 
     def in_map(self, obj):
-        if obj.location.rows >= 0 and obj.location.rows < self.rows and obj.location.cols >= 0 and obj.location.cols < self.cols:
+        if obj.location.row >= 0 and obj.location.row < self.rows and obj.location.col >= 0 and obj.location.col < self.cols:
             return True
         return False
+
+    def decrease_mana(self, cost):
+        self.owner.decrease_mana(cost)
+
+    def update_mana_per_turn(self):
+        self.owner.update_mana_per_turn()
+
 
     def can_build_portal_at(self, loc):
         if self.owner.mana < self.portal_cost:
@@ -139,25 +148,41 @@ class Game(BaseObject):
                 return False
         return True
 
+    def can_owner_summon_ice_troll(self):
+        return self.owner.can_summon(self.ice_troll_cost)
 
-    def build_portal(self, object):
-        pass
+    def can_owner_summon_lava_giant(self):
+        return self.owner.can_summon(self.lava_giant_cost)
 
-    def set_attack(self, object, target):
-        pass
+    def create_creature(self, creature_type, location, portal):
+        self.last_uid = self.last_uid + 1
+        new_id = 1
+        if len(self.owner.creatures) > 0:
+            new_id = self.owner.creatures[-1].id + 1
+        if creature_type == "IceTroll":
+            ice = IceTroll(new_id, self.ice_troll_max_health, location, self.owner, self.last_uid,
+                           self.ice_troll_attack_multiplier, self.ice_troll_attack_range, self.ice_troll_max_speed,
+                           portal, self.ice_troll_summoning_duration, self.ice_troll_suffocation_per_turn)
+            self.owner.add_ice_troll(ice)
 
-    def move_to(self, object, loc):
-        pass
+        elif creature_type == "LavaGiant":
+            lava = LavaGiant(new_id, self.lava_giant_max_health, location, self.owner, self.last_uid,
+                             self.lava_giant_attack_multiplier, self.lava_giant_attack_range, self.lava_giant_max_speed,
+                             portal, self.lava_giant_summoning_duration, self.lava_giant_suffocation_per_turn)
+            self.owner.add_lava_giant(lava)
 
-    def can_summon_ice_troll(self):
-        return False
+    def create_building(self, building_type, location, owner):
+        self.last_uid = self.last_uid + 1
+        new_id = 1
+        if len(owner.get_all_buildings()) > 0:
+            new_id = owner.get_all_buildings()[-1].id + 1
+        if building_type == "Portal":
+            port = Portal(new_id, self.portal_max_health, location, owner, self.last_uid, self.portal_size, self.portal_building_duration)
+            self.owner.add_portal(port)
 
-    def can_summon_lava_giant(self):
-        return False
+if __name__ == '__main__':
 
-    def summon_ice_troll(self):
-        pass
+    mapa = Map.Empty_Map()
+    g = Game(mapa.get_player_0(), mapa.get_player_1(), mapa)
 
-    def summon_lava_giant(self):
-        pass
-
+    print g.last_uid

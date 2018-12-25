@@ -7,6 +7,9 @@ class Location (MapObject):
         self.col = col
         MapObject.__init__(self, self)
 
+    def __str__(self):
+        return "(%s, %s)" % (self.row, self.col)
+
     def __add__(self, other):
         return Location(self.row + other.row, self.col + other.col)
 
@@ -26,7 +29,8 @@ class Location (MapObject):
         return self + other
 
     def distance(self, other):
-        return self.__norm(self-other)
+        diff = self - other
+        return diff.__norm()
 
     def equals(self, other):
         return self.row == other.row and self.col == other.col
@@ -47,6 +51,3 @@ class Location (MapObject):
         vec = other - self
         vec = vec * (float(dist) / vec.__norm())
         return self + vec.__int_location()
-
-
-

@@ -4,10 +4,6 @@ class MapObject(BaseObject):
     def __init__(self, loc):
         BaseObject.__init__(self, "MapObject")
         self.location = loc
-        self.alive = True
-
-    def is_alive(self):
-        return self.alive
 
     def distance(self, other):
         if not self.is_alive():

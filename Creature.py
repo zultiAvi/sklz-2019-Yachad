@@ -11,9 +11,17 @@ class Creature(GameObject):
         self.summoning_duration= summoning_duration
         self.suffocation_per_turn = suffocation_per_turn
 
+        self._action = ""
+        self._attack_object = None
+        self._next_location = None
+
     def decrease_health_per_turn(self):
         self.decrease_health(self.suffocation_per_turn)
 
+    def set_action(self):
+        if self._action == "attack":
+            self._attack_object.current_health -= self.attack_multiplier
+        if self._action == "move":
+            self.location = self._next_location
 
-    def do_your_thing(self):
-        pass
+        self.decrease_health(self.suffocation_per_turn)

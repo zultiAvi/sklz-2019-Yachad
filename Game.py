@@ -11,7 +11,7 @@ class Game(BaseObject):
         self.mapa = mapa
         self.last_uid = owner.id * 100000
 
-        self.turn = 0
+        self.turn = mapa.turn
         self.cols = mapa.map_size.col
         self.rows = mapa.map_size.row
         self.max_points = mapa.castle_data.castle_max_health
@@ -55,7 +55,7 @@ class Game(BaseObject):
         return owner_buildings + enemy_buildings
 
     def get_all_castles(self):
-        return [self.owner.castle, self.enemy.castle]
+        return [self.enemy.castle, self.owner.castle]
 
     def get_all_my_elves(self):
         return self.owner.all_elves
@@ -64,7 +64,7 @@ class Game(BaseObject):
         return self.enemy.all_elves
 
     def get_all_elves(self):
-        return self.get_all_my_elves() + self.get_all_enemy_elves()
+        return self.get_all_enemy_elves() + self.get_all_my_elves()
 
     def get_all_living_elves(self):
         return self.get_my_living_elves() + self.get_enemy_living_elves()
@@ -73,7 +73,7 @@ class Game(BaseObject):
         return [self.owner, self.enemy]
 
     def get_all_portals(self):
-        return self.owner.portals + self.enemy.portals
+        return self.enemy.portals + self.owner.portals
 
     def get_enemy(self):
         return self.enemy
@@ -156,19 +156,19 @@ class Game(BaseObject):
 
     def create_creature(self, creature_type, location, portal):
         self.last_uid = self.last_uid + 1
-        new_id = 1
+        new_id = 0
         if len(self.owner.creatures) > 0:
             new_id = self.owner.creatures[-1].id + 1
         if creature_type == "IceTroll":
             ice = IceTroll(new_id, self.ice_troll_max_health, location, self.owner, self.last_uid,
                            self.ice_troll_attack_multiplier, self.ice_troll_attack_range, self.ice_troll_max_speed,
-                           portal, self.ice_troll_summoning_duration, self.ice_troll_suffocation_per_turn)
+                           None, None, self.ice_troll_suffocation_per_turn)
             self.owner.add_ice_troll(ice)
 
         elif creature_type == "LavaGiant":
             lava = LavaGiant(new_id, self.lava_giant_max_health, location, self.owner, self.last_uid,
                              self.lava_giant_attack_multiplier, self.lava_giant_attack_range, self.lava_giant_max_speed,
-                             portal, self.lava_giant_summoning_duration, self.lava_giant_suffocation_per_turn)
+                             None, None, self.lava_giant_suffocation_per_turn)
             self.owner.add_lava_giant(lava)
 
     def create_building(self, building_type, location, owner):
@@ -179,6 +179,7 @@ class Game(BaseObject):
         if building_type == "Portal":
             port = Portal(new_id, self.portal_max_health, location, owner, self.last_uid, self.portal_size, self.portal_building_duration)
             self.owner.add_portal(port)
+
 
 if __name__ == '__main__':
 

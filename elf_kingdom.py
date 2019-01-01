@@ -12,5 +12,6 @@ from Building import Building
 from Castle import Castle
 from Portal import Portal
 from MyBot import *
+from EnemyBot import *
 import Map
 

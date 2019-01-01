@@ -1,8 +1,10 @@
 from elf_kingdom import *
 from BaseObject import games, players
+from PrintData import data_to_text
 
 class elf_kingdom:
     def __init__(self, mapa):
+
         self.current_map = mapa
 
         global players
@@ -18,7 +20,9 @@ class elf_kingdom:
         self.players = players
         self.games = games
 
+
     def do_turn(self, turn_number):
+
         self.set_new_turn(turn_number)
 
         # try:
@@ -34,6 +38,10 @@ class elf_kingdom:
         #     self.players[1].is_alive = False
         #     print "Player 1 crash"
         #     return
+
+        # turn_to_write = -1
+        # write_game_to_file(r"C:\temp\map_%s.map" % self.games[1].turn, self.games[1], turn_to_write)
+
         do_turn_0(self.games[0])
         do_turn_1(self.games[1])
 
@@ -50,10 +58,15 @@ class elf_kingdom:
 
         for i, p in enumerate(players):
             ok = p.have_enough_mana(self.games[i])
-            if not ok:
+            if ok:
+                p.update_mana()
+            else:
                 p.clean_mana_operations()
 
             p.set_actions()
+
+        for i, p in enumerate(players):
+            p.update_score(self.games[i])
 
     def end_game(self, last_turn=False):
         p0_lost = not self.players[0].is_alive()
@@ -83,9 +96,10 @@ class elf_kingdom:
         return 0
 
     def run_game(self,number_of_turns):
-        for i in range(1, number_of_turns + 1):
-            # print i
-            kingdom.do_turn(i)
+        turn = self.games[0].turn
+        while turn < number_of_turns:
+            turn = turn + 1
+            kingdom.do_turn(turn)
             ended = kingdom.end_game()
             if ended != 0:
                 return ended
@@ -93,10 +107,19 @@ class elf_kingdom:
         ended = kingdom.end_game(True)
         return ended
 
+def write_game_to_file(fn, game, turn):
+    if game.turn == turn or turn < 0:
+        text = data_to_text(game)
+        with open(fn, "w") as f:
+            for t in text:
+                f.write(t + "\n")
+
 
 if __name__ == '__main__':
-    kingdom = elf_kingdom(Map.Default_Map())
-    number_of_turns = 350
+    mapa = Map.Default_Map()
+    # mapa = Map.Map(file_name = r"C:\Temp\map_32.map")
+    kingdom = elf_kingdom(mapa)
+    number_of_turns = mapa.max_turns
 
     winner = kingdom.run_game(number_of_turns)
     exit(winner)

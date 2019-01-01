@@ -28,6 +28,13 @@ class Player(BaseObject):
     def get_opponent(self):
         return self._opponent
 
+    def add_elf(self, elf):
+        self.all_elves.append(elf)
+        self.update_living_elves()
+
+    def add_castle(self, castle):
+        self.castle = castle
+
     def is_alive(self):
         return self.castle.current_health > 0
 
@@ -38,14 +45,13 @@ class Player(BaseObject):
         self.mana += self.mana_per_turn
 
     def get_all_living_creatures(self):
-        out = self.living_elves
-        out.append(self.creatures)
+        out = self.living_elves + self.creatures
         return out
 
     def get_all_buildings(self):
         c = self.castle
         p = self.portals
-        return [c].append(p)
+        return [c] + p
 
     def update_all_elves(self, elves):
         self.all_elves = elves if elves is not None else []
@@ -73,6 +79,17 @@ class Player(BaseObject):
         self.lava_giants.append(lava)
         self.update_creatures()
 
+    def remove_creatures(self):
+        for index, ice in enumerate(self.ice_trolls):
+            if not ice.is_alive():
+                del (self.ice_trolls[index])
+
+        for index, lava in enumerate(self.lava_giants):
+            if not lava.is_alive():
+                del (self.lava_giants[index])
+
+        self.update_creatures()
+
     def remove_ice_troll(self, ice):
         index = self.find_creature(ice, self.ice_trolls)
         if index != -1:
@@ -90,7 +107,7 @@ class Player(BaseObject):
 
     def remove_portals(self):
         for p in self.portals:
-            if not p.is_alive:
+            if not p.is_alive():
                 del (p)
 
     def do_your_thing(self):
@@ -119,14 +136,14 @@ class Player(BaseObject):
         return -1
 
     def do_your_things(self):
+        for c in self.creatures:
+            c.do_your_thing()
+
         for p in self.portals:
             p.do_your_thing()
 
         for e in self.living_elves:
             e.do_your_thing()
-
-        for c in self.creatures:
-            c.do_your_thing()
 
     def have_enough_mana(self, game):
         current_mana = game.get_my_mana()
@@ -148,12 +165,28 @@ class Player(BaseObject):
             if e.need_mana() > 0:
                 e.clean_action_with_mana()
 
+    def update_mana(self):
+        current_mana = self.mana
+        for p in self.portals:
+            current_mana -= p.need_mana()
+        for e in self.living_elves:
+            current_mana -= e.need_mana()
+
+        self.mana = current_mana
+
+    def update_score(self, game):
+        pass
+
     def set_actions(self):
         for p in self.portals:
             p.set_action()
+
+        self.remove_portals()
 
         for e in self.living_elves:
             e.set_action()
 
         for c in self.creatures:
             c.set_action()
+
+        self.remove_creatures()

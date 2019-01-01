@@ -3,12 +3,12 @@ from BaseObject import get_game
 
 
 class Portal(Building):
-    def __init__(self, b_id, health, loc, owner, unique_id, size, turns_to_summon):
-        Building.__init__(self, b_id, health, loc, owner, unique_id, size)
+    def __init__(self, id, health, loc, owner, unique_id, size, turns_to_summon):
+        Building.__init__(self, id, health, loc, owner, unique_id, size)
         self.type = "Portal"
         self.in_summoning = None
         self.is_summoning = False
-        self.turns_to_summon = 0
+        self.turns_to_summon = -1
         self.init_turns_to_summon = turns_to_summon
 
         self._need_mana = 0
@@ -63,8 +63,9 @@ class Portal(Building):
         if self.turns_to_summon == 0:
             game = get_game(self.owner)
             game.create_creature(self.in_summoning, self.location, self)
-            self.in_summoning = ""
+            self.in_summoning = None
             self.is_summoning = False
+            self.turns_to_summon = -1
 
     def need_mana(self):
         return self._need_mana

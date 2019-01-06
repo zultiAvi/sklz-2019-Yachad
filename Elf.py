@@ -12,8 +12,8 @@ class Elf (GameObject):
         self.currently_building = None
         self.is_building = False
         self.max_speed = max_speed
-        self.spawn_turns = 0
-        self.turns_to_revive = turns_to_revive
+        self.spawn_turns = turns_to_revive
+        self.turns_to_revive = 0
 
         self._need_mana = 0
         self._action = ""
@@ -26,10 +26,15 @@ class Elf (GameObject):
 
     def can_build_portal(self):
         game = get_game(self.owner)
-        return game.can_build_portal_at(self, self.location)
+        return game.can_build_portal_at(self.location)
 
     def in_attack_range(self, object):
-        return self.location.in_range(object.location, self.attack_range)
+        try:
+            d = object.size
+        except AttributeError:
+            d = 0
+
+        return self.location.in_range(object.location, self.attack_range + d)
 
     def attack(self, target):
         if not self.is_alive():
@@ -73,6 +78,13 @@ class Elf (GameObject):
         self._action = "move"
         self._next_location = new_loc
 
+    def under_attack(self, damage):
+        self.current_health -= damage
+        if self.current_health <= 0:
+            self.current_health = 0
+            self.turns_to_revive = self.spawn_turns-1
+            self.location = None
+
     def clear_locals(self):
         self._need_mana = 0
         self._action = ""
@@ -83,10 +95,12 @@ class Elf (GameObject):
         if not self.is_alive():
             if self.turns_to_revive > 0:
                 self.turns_to_revive -= 1
+                if self.turns_to_revive == 0:
+                    game = get_game(self.owner)
+                    self.location = self.initial_location
             else:
                 game = get_game(self.owner)
                 self.current_health = game.elf_max_health
-                self.turns_to_revive = self.spawn_turns
 
             self.clear_locals()
             return
@@ -109,7 +123,7 @@ class Elf (GameObject):
             else:
                 self._action = ""
         if self._action == "attack":
-            if not self.in_range(self._attack_object.location, self.attack_range):
+            if not self.in_attack_range(self._attack_object):
                 self._action = ""
         if self._action == "move":
             return
@@ -117,13 +131,13 @@ class Elf (GameObject):
     def need_mana(self):
         return self._need_mana
 
-    def clean_mana_operations(self):
+    def clean_action_with_mana(self):
         if self._action == "build portal":
             self.clear_locals()
 
     def set_action(self):
         if self._action == "attack":
-            self._attack_object.current_health -= self.attack_multiplier
+            self._attack_object.under_attack(self.attack_multiplier)
         if self._action == "move":
             self.location = self._next_location
         if self._action == "build portal":

@@ -23,6 +23,10 @@ class Player(BaseObject):
         self.portals = portals if portals is not None else []
         self.castle = castle
 
+        self.last_portal_id = self.portals[-1].id if len(self.portals) > 0 else -1
+        self.last_ice_troll_id = self.ice_trolls[-1].id if len(self.ice_trolls) > 0 else -1
+        self.last_lava_giant_id = self.lava_giants[-1].id if len(self.lava_giants) > 0 else -1
+
     def set_opponent(self, o):
         self._opponent = o
     def get_opponent(self):
@@ -64,7 +68,7 @@ class Player(BaseObject):
                 self.living_elves.append(elf)
 
     def update_creatures(self):
-        self.creatures = self.ice_trolls + self.lava_giants
+        self.creatures = self.lava_giants + self.ice_trolls
 
     def can_summon(self, cost):
         if self.mana < cost:
@@ -73,10 +77,12 @@ class Player(BaseObject):
 
     def add_ice_troll(self, ice):
         self.ice_trolls.append(ice)
+        self.last_ice_troll_id = ice.id
         self.update_creatures()
 
     def add_lava_giant(self, lava):
         self.lava_giants.append(lava)
+        self.last_lava_giant_id = lava.id
         self.update_creatures()
 
     def remove_creatures(self):
@@ -104,11 +110,12 @@ class Player(BaseObject):
 
     def add_portal(self, port):
         self.portals.append(port)
+        self.last_portal_id = port.id
 
     def remove_portals(self):
-        for p in self.portals:
+        for index, p in enumerate(self.portals):
             if not p.is_alive():
-                del (p)
+                del (self.portals[index])
 
     def do_your_thing(self):
         for elf in self.all_elves:
@@ -142,7 +149,7 @@ class Player(BaseObject):
         for p in self.portals:
             p.do_your_thing()
 
-        for e in self.living_elves:
+        for e in self.all_elves:
             e.do_your_thing()
 
     def have_enough_mana(self, game):
@@ -175,13 +182,11 @@ class Player(BaseObject):
         self.mana = current_mana
 
     def update_score(self, game):
-        pass
+        self.score = game.castle_max_health - game.get_enemy_castle().current_health
 
     def set_actions(self):
         for p in self.portals:
             p.set_action()
-
-        self.remove_portals()
 
         for e in self.living_elves:
             e.set_action()
@@ -189,4 +194,3 @@ class Player(BaseObject):
         for c in self.creatures:
             c.set_action()
 
-        self.remove_creatures()

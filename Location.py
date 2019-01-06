@@ -1,4 +1,4 @@
-from math import sqrt
+from math import sqrt, ceil
 from MapObject import MapObject
 
 class Location (MapObject):
@@ -17,10 +17,13 @@ class Location (MapObject):
         return Location(self.row - other.row, self.col - other.col)
 
     def __norm(self):
-        return sqrt(self.row * self.row + self.col * self.col)
+        return int (ceil (sqrt(self.row * self.row + self.col * self.col)))
 
     def __mul__(self, factor):
-        return Location(factor * self.row, factor * self.col)
+        return Location(int (factor * self.row), int (factor * self.col))
+
+    def __div__(self, factor):
+        return Location(self.row / factor, self.col / factor)
 
     def __int_location(self):
         return Location (int(self.row), int(self.col))

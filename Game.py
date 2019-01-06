@@ -42,7 +42,6 @@ class Game(BaseObject):
         self.portal_max_health = mapa.portal_data.portal_max_health
         self.portal_size = mapa.portal_data.portal_size
 
-
     def debug(self, obj):
         print "(%s) %s: %s" %(self.owner.id, self.turn, obj)
 
@@ -146,6 +145,12 @@ class Game(BaseObject):
         for b in self.get_all_buildings():
             if loc.distance(b.location) < self.portal_size + b.size:
                 return False
+
+        for e in self.get_all_elves():
+            if e.is_building:
+                e_size = self.portal_size if e.currently_building == "Portal" else 0
+                if loc.distance(e.location) < self.portal_size + e_size:
+                    return False
         return True
 
     def can_owner_summon_ice_troll(self):
@@ -156,16 +161,15 @@ class Game(BaseObject):
 
     def create_creature(self, creature_type, location, portal):
         self.last_uid = self.last_uid + 1
-        new_id = 0
-        if len(self.owner.creatures) > 0:
-            new_id = self.owner.creatures[-1].id + 1
         if creature_type == "IceTroll":
+            new_id = self.owner.last_ice_troll_id + 1
             ice = IceTroll(new_id, self.ice_troll_max_health, location, self.owner, self.last_uid,
                            self.ice_troll_attack_multiplier, self.ice_troll_attack_range, self.ice_troll_max_speed,
                            None, None, self.ice_troll_suffocation_per_turn)
             self.owner.add_ice_troll(ice)
 
         elif creature_type == "LavaGiant":
+            new_id = self.owner.last_lava_giant_id + 1
             lava = LavaGiant(new_id, self.lava_giant_max_health, location, self.owner, self.last_uid,
                              self.lava_giant_attack_multiplier, self.lava_giant_attack_range, self.lava_giant_max_speed,
                              None, None, self.lava_giant_suffocation_per_turn)
@@ -173,11 +177,9 @@ class Game(BaseObject):
 
     def create_building(self, building_type, location, owner):
         self.last_uid = self.last_uid + 1
-        new_id = 1
-        if len(owner.get_all_buildings()) > 0:
-            new_id = owner.get_all_buildings()[-1].id + 1
         if building_type == "Portal":
-            port = Portal(new_id, self.portal_max_health, location, owner, self.last_uid, self.portal_size, self.portal_building_duration)
+            new_id = self.owner.last_portal_id + 1
+            port = Portal(new_id, self.portal_max_health, location, self.owner, self.last_uid, self.portal_size, self.portal_building_duration)
             self.owner.add_portal(port)
 
 

@@ -16,7 +16,7 @@ class LavaGiant(Creature):
         opponent = self.owner.get_opponent()
         opponent_castle = opponent.castle
         game = get_game(self.owner)
-        if self.in_range(opponent_castle.location, self.attack_range):
+        if self.in_range(opponent_castle.location, self.attack_range + opponent_castle.size):
             self._action = "attack"
             self._attack_object = opponent_castle
             game.debug("Lava Giant %s attacks Castle %s" %(self, opponent_castle))

@@ -18,9 +18,14 @@ class Creature(GameObject):
     def decrease_health_per_turn(self):
         self.decrease_health(self.suffocation_per_turn)
 
+    def under_attack(self, damage):
+        self.current_health -= damage
+        if self.current_health <= 0:
+            self.owner.remove_creatures()
+
     def set_action(self):
         if self._action == "attack":
-            self._attack_object.current_health -= self.attack_multiplier
+            self._attack_object.under_attack(self.attack_multiplier)
         if self._action == "move":
             self.location = self._next_location
 

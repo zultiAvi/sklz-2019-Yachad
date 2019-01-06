@@ -6,7 +6,7 @@ class Portal(Building):
     def __init__(self, id, health, loc, owner, unique_id, size, turns_to_summon):
         Building.__init__(self, id, health, loc, owner, unique_id, size)
         self.type = "Portal"
-        self.in_summoning = None
+        self.currently_summoning = None
         self.is_summoning = False
         self.turns_to_summon = -1
         self.init_turns_to_summon = turns_to_summon
@@ -62,8 +62,8 @@ class Portal(Building):
 
         if self.turns_to_summon == 0:
             game = get_game(self.owner)
-            game.create_creature(self.in_summoning, self.location, self)
-            self.in_summoning = None
+            game.create_creature(self.currently_summoning, self.location, self)
+            self.currently_summoning = None
             self.is_summoning = False
             self.turns_to_summon = -1
 
@@ -82,9 +82,9 @@ class Portal(Building):
             return
 
         self.is_summoning = True
-        self.in_summoning = self._action
+        self.currently_summoning = self._action
         self.turns_to_summon = self._duration
-        self.owner.decrease_mana(self._need_mana)
+        # self.owner.decrease_mana(self._need_mana)
 
         self._action = ""
         self._need_mana = 0

@@ -39,8 +39,8 @@ class elf_kingdom:
         #     print "Player 1 crash"
         #     return
 
-        # turn_to_write = -1
-        # write_game_to_file(r"C:\temp\map_%s.map" % self.games[1].turn, self.games[1], turn_to_write)
+        turn_to_write = -1
+        write_game_to_file(r"C:\temp\map_%s.map" % self.games[1].turn, self.games[1], turn_to_write)
 
         do_turn_0(self.games[0])
         do_turn_1(self.games[1])
@@ -66,6 +66,9 @@ class elf_kingdom:
             p.set_actions()
 
         for i, p in enumerate(players):
+            p.remove_portals()
+            p.remove_creatures()
+
             p.update_score(self.games[i])
 
     def end_game(self, last_turn=False):
@@ -116,8 +119,8 @@ def write_game_to_file(fn, game, turn):
 
 
 if __name__ == '__main__':
-    mapa = Map.Default_Map()
-    # mapa = Map.Map(file_name = r"C:\Temp\map_32.map")
+    # mapa = Map.Default_Map()
+    mapa = Map.Map(file_name = r"C:\Temp\map_92.map")
     kingdom = elf_kingdom(mapa)
     number_of_turns = mapa.max_turns
 

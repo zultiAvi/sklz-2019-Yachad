@@ -112,6 +112,8 @@ class Map:
         return index
 
     def get_location(self, text):
+        if text == "None":
+            return None
         loc = text.replace("(","").replace(")","").split(",")
         return Location(int(loc[0]), int(loc[1]))
 
@@ -272,6 +274,12 @@ class Map:
                 elf.max_speed = int(w[1])
             elif w[0] == "Elf.turns_to_revive":
                 elf.turns_to_revive = int(w[1])
+            elif w[0] == "Elf.currently_building":
+                elf.currently_building = None if w[1] == "None" else w[1]
+            elif w[0] == "Elf.is_building":
+                elf.is_building = True if w[1] == "True" else False
+            elif w[0] == "Elf.spawn_turns":
+                elf.spawn_turns = int(w[1])
 
         elf.owner.add_elf(elf)
 
@@ -280,11 +288,11 @@ class Map:
         w = l[:-1].split(" = ")
         if len(w) == 1:
             return
-        if w[0] == "Portal.type":
+        if w[0] == "Creature.type":
             if w[1] == "LavaGiant":
                 self.create_lava_giant(text[1:], index)
-        if w[1] == "IceTroll":
-            self.create_ice_troll(text[1:], index)
+            if w[1] == "IceTroll":
+                self.create_ice_troll(text[1:], index)
 
     def create_lava_giant(self, text, index):
         lava_giant = LavaGiant(0, 0, 0, 0, index, 0, 0, 0, None, 0, 0)
@@ -397,8 +405,8 @@ class Map:
                 portal.owner  = self.player_0 if int(w[1]) == 0 else self.player_1
             elif w[0] == "Portal.size":
                 portal.size = int(w[1])
-            elif w[0] == "Portal.in_summoning":
-                portal.in_summoning = w[1]
+            elif w[0] == "Portal.currently_summoning":
+                portal.currently_summoning = w[1]
             elif w[0] == "Portal.is_summoning":
                 portal.is_summoning = True if w[1] == "True" else False
             elif w[0] == "Portal.turns_to_summon":
@@ -451,10 +459,10 @@ class Default_Map(Map):
         player_1_castle = Castle(0, 150, Location(700, 5800), player_1, 1001, 500)
 
         # Elf(game, id, init_health, initial_loc, owner, unique_id, attack_multiplier, attack_range, max_speed, turns_to_revive)
-        player_0_elves = [Elf(0, 12, Location(3100, 1200), player_0, 1004, 1, 300, 100, 0),
-                          Elf(1, 12, Location(2600,  700), player_0, 1005, 1, 300, 100, 0)]
-        player_1_elves = [Elf(0, 12, Location( 700, 5300), player_1, 1006, 1, 300, 100, 0),
-                          Elf(1, 12, Location(1200, 5800), player_1, 1007, 1, 300, 100, 0)]
+        player_0_elves = [Elf(0, 12, Location(3100, 1200), player_0, 1004, 1, 300, 100, 40),
+                          Elf(1, 12, Location(2600,  700), player_0, 1005, 1, 300, 100, 40)]
+        player_1_elves = [Elf(0, 12, Location( 700, 5300), player_1, 1006, 1, 300, 100, 40),
+                          Elf(1, 12, Location(1200, 5800), player_1, 1007, 1, 300, 100, 40)]
         # Portal ( game, id, health, loc, owner, unique_id, size, turns_to_summon)
         player_0_portals = [Portal(0, 8, Location(1900, 1000), player_0, 1002, 300, 2)]
         player_1_portals = [Portal(0, 8, Location(1900, 5500), player_1, 1003, 300, 2)]

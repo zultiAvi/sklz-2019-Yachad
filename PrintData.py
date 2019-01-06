@@ -62,7 +62,7 @@ def players_to_text(game):
     text += all_creatures_to_text(game.get_my_creatures())
     text += all_creatures_to_text(game.get_enemy_creatures())
     text += castle_to_text(game.get_all_castles())
-    text += all_portals_to_text(game.get_all_portals())
+    text += all_portals_to_text(game.get_my_portals(), game.get_enemy_portals())
 
     return text
 
@@ -79,6 +79,9 @@ def all_elves_to_text(all_elves):
         text.append("Elf.attack_range = %s" % e.attack_range)
         text.append("Elf.max_speed = %s" % e.max_speed)
         text.append("Elf.turns_to_revive = %s" % e.turns_to_revive)
+        text.append("Elf.currently_building = %s" % e.currently_building)
+        text.append("Elf.is_building = %s" % e.is_building)
+        text.append("Elf.spawn_turns = %s" % e.spawn_turns)
 
     return text
 
@@ -114,8 +117,9 @@ def castle_to_text(all_castls):
         
     return text
 
-def all_portals_to_text(all_portals):
+def all_portals_to_text(my_portals, enemy_portals):
     text = []
+    all_portals = my_portals + enemy_portals
     for p in all_portals:
         text.append("Portal")
         text.append("Portal.type = %s" % p.type)
@@ -125,7 +129,7 @@ def all_portals_to_text(all_portals):
         text.append("Portal.initial_location = %s" % p.initial_location)
         text.append("Portal.owner = %s" % p.owner.id)
         text.append("Portal.size = %s" % p.size)
-        text.append("Portal.in_summoning = %s" % p.in_summoning)
+        text.append("Portal.currently_summoning = %s" % p.currently_summoning)
         text.append("Portal.is_summoning = %s" % p.is_summoning)
         text.append("Portal.turns_to_summon = %s" % p.turns_to_summon)
 
